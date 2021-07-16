@@ -31,7 +31,7 @@ public class LoginServlet extends AbstractRoutableHttpServlet {
     }
 
     @Override
-    public String getPattern() {
+    public String getMapping() {
         return "/login";
     }
 }

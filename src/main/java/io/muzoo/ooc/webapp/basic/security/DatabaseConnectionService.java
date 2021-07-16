@@ -8,9 +8,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * We will make this singleton too
+ */
 public class DatabaseConnectionService {
 
     private final HikariDataSource ds;
+
+    private static DatabaseConnectionService service;
 
     /**
      * Database connection pool using hikari library
@@ -18,7 +23,7 @@ public class DatabaseConnectionService {
      * The file config. properties is not committed to git repository
      */
 
-    DatabaseConnectionService() {
+    public DatabaseConnectionService() {
         ds = new HikariDataSource();
         ds.setMaximumPoolSize(20);
         ConfigProperties configProperties = ConfigurationLoader.load();
@@ -34,6 +39,14 @@ public class DatabaseConnectionService {
 
     public Connection getConnection() throws SQLException {
         return ds.getConnection();
+    }
+
+    public static DatabaseConnectionService getInstance() {
+        if (service == null) {
+            service = new DatabaseConnectionService();
+
+        }
+        return service;
     }
 
 //    private static DatabaseConnectionService service;

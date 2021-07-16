@@ -4,11 +4,14 @@ package io.muzoo.ooc.webapp.basic.security;
 import io.muzoo.ooc.webapp.basic.model.User;
 import lombok.Setter;
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * User service is used in too many places and we only need one instance of it so we will make it singleton
+ */
 public class UserService {
 
     private static final String INSERT_USER_SQL = "INSERT INTO tbl_user (username, password, display_name) VALUES(?,?,?);";
@@ -16,25 +19,38 @@ public class UserService {
     private static final String SELECT_ALL_USERS_SQL = "SELECT * FROM tbl_user;";
     private static final String DELETE_USER_SQL = "DELETE FROM tbl_user WHERE username = ?;";
 
-    private static DatabaseConnectionService database;
+    private static DatabaseConnectionService database = new DatabaseConnectionService();
+
+    private static UserService service = new UserService();
+
+    public UserService() {
+
+    }
+
+    public static UserService getInstance() {
+        if (service == null) {
+            service = new UserService();
+            service.setDatabaseConnectionService(DatabaseConnectionService.getInstance());
+        }
+        return service;
+    }
 
     public void setDatabaseConnectionService(DatabaseConnectionService databaseConnectionService) {
         this.database = databaseConnectionService;
     }
 
-
-
     // create new user
-    public void createUser(String username, String password,String displayName) throws UserServiceException {
+    public void createUser(String username, String password, String displayName) throws UserServiceException {
 
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        try {
-            Connection connection = database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(INSERT_USER_SQL);
-            ps.setString(1,username);
-            ps.setString(2,hashedPassword);
-            ps.setString(3,displayName);
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement ps = connection.prepareStatement(INSERT_USER_SQL);
+        ) {
+            ps.setString(1, username);
+            ps.setString(2, hashedPassword);
+            ps.setString(3, displayName);
             ps.executeUpdate();
             //need to be manually commit the change
             connection.setAutoCommit(false);
@@ -49,19 +65,20 @@ public class UserService {
 
     //find user by username
     public User findByUsername(String username) {
-        try {
-            Connection connection = database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(SELECT_USER_SQL);
-            ps.setString(1,username);
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement ps = connection.prepareStatement(SELECT_USER_SQL);
+
+        ) {
+            ps.setString(1, username);
             ResultSet resultSet = ps.executeQuery();
             resultSet.next();
-            return new User (
+            return new User(
                     resultSet.getLong("id"),
                     resultSet.getString("username"),
                     resultSet.getString("password"), // hashed password
                     resultSet.getString("display_Name")
             );
-
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -72,22 +89,24 @@ public class UserService {
 
     /**
      * list all users in the database
+     *
      * @return list of users, never return null
      */
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        try {
-            Connection connection = database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(SELECT_ALL_USERS_SQL);
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement ps = connection.prepareStatement(SELECT_ALL_USERS_SQL);
+        ) {
             ResultSet resultSet = ps.executeQuery();
 
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 users.add(
-                        new User (
-                            resultSet.getLong("id"),
-                            resultSet.getString("username"),
-                            resultSet.getString("password"),
-                            resultSet.getString("display_Name")));
+                        new User(
+                                resultSet.getLong("id"),
+                                resultSet.getString("username"),
+                                resultSet.getString("password"),
+                                resultSet.getString("display_Name")));
             }
 
         } catch (SQLException throwables) {
@@ -97,7 +116,31 @@ public class UserService {
     }
 
     //delete user
+    public void deleteUserByUsername() {
+        throw new UnsupportedOperationException("not yet implement");
+    }
     // update user by user id
+
+    /**
+     * User can only change their display name when updating profile
+     *
+     * @param id
+     * @param displayName
+     */
+    public void updateUserById(long id, String displayName) {
+        throw new UnsupportedOperationException("not yet implement");
+    }
+
+    /**
+     * Change password method is separated from update user method because it normally
+     * never change password and update profile at the same time.
+     *
+     * @param newPassword
+     */
+    public void changePassword(String newPassword) {
+        throw new UnsupportedOperationException("not yet implement");
+    }
+
 
     public static void main(String[] args) throws UserServiceException {
         UserService userService = new UserService();

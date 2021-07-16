@@ -22,6 +22,12 @@ public class ServletRouter {
         servletClasses.add(LogoutServlet.class);
     }
 
+    private SecurityService securityService;
+
+    public void setSecurityService(SecurityService securityService) {
+        this.securityService = securityService;
+    }
+
     public void init(Context ctx) {
         UserService userService = new UserService();
         SecurityService securityService = new SecurityService();
@@ -32,7 +38,7 @@ public class ServletRouter {
                 AbstractRoutableHttpServlet httpServlet = servletClass.newInstance();
                 httpServlet.setSecurityService(securityService);
                 Tomcat.addServlet(ctx, servletClass.getSimpleName(), httpServlet);
-                ctx.addServletMapping(httpServlet.getPattern(), servletClass.getSimpleName());
+                ctx.addServletMapping(httpServlet.getMapping(), servletClass.getSimpleName());
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

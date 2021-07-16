@@ -10,8 +10,11 @@ import java.util.Objects;
 
 public class SecurityService {
 
-    @Setter
     private UserService userService;
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     public String getCurrentUsername(HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -22,6 +25,7 @@ public class SecurityService {
     public boolean isAuthorized(HttpServletRequest request) {
         String username = (String) request.getSession()
                 .getAttribute("username");
+        // do checking using user from the database
         return (username != null && userService.findByUsername(username) != null);
     }
 

@@ -15,7 +15,7 @@ public class LogoutServlet extends AbstractRoutableHttpServlet {
     }
 
     @Override
-    public String getPattern() {
+    public String getMapping() {
         return "/logout";
     }
 }
