@@ -115,9 +115,23 @@ public class UserService {
         return users;
     }
 
-    //delete user
-    public void deleteUserByUsername() {
-        throw new UnsupportedOperationException("not yet implement");
+    /**
+     * Delete user by username.
+     * @param username
+     * @return true if successful
+     */
+    public boolean deleteUserByUsername(String username) {
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement ps = connection.prepareStatement(DELETE_USER_SQL);
+        ) {
+            ps.setString(1, username);
+            int deleteCount = ps.executeUpdate();
+            connection.commit();
+            return deleteCount > 0;
+        } catch (SQLException throwables) {
+            return false;
+        }
     }
     // update user by user id
 
