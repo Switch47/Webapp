@@ -18,7 +18,9 @@ public class LoginServlet extends AbstractRoutableHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String error = "";
         // authentication
-        if (securityService.login(request)) {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        if (securityService.authenticate(username, password, request)) {
             response.sendRedirect("/");
         } else {
             error = "Username or password incorrect. Please try again.";

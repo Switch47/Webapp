@@ -12,6 +12,14 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+<style>
+    body {
+        background-image: url('https://images.unsplash.com/photo-1520052205864-92d242b3a76b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+</style>
 <div class="container">
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
@@ -68,7 +76,10 @@
                         <td class="py-3">${user.username}</td>
                         <td class="py-3">${user.display_name}</td>
                         <td class="pt-3" class="align-middle">
-                            <button class="btn btn-warning btn-sm" type="button"><i class="fa fa-pencil"></i></button>
+                            <a class="btn btn-warning btn-sm" type="button" href="/user/edit?username=${user.username}">
+                                <i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-info btn-sm" type="button" href="/user/password?username=${user.username}">
+                                <i class="fa fa-key"></i></a>
                             <c:if test="${currentUser.username != user.username}">
 
                                 <button

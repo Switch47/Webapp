@@ -56,7 +56,7 @@ public class CreateUserServlet extends AbstractRoutableHttpServlet{
                 errorMessage = "Password cannot be blank.";
             }
             else if (!StringUtils.equals(password, cpassword)) {
-                errorMessage = "Confirming password does not match with the input password.";
+                errorMessage = "Confirming password mismatches.";
             }
 
             if (errorMessage != null) {

@@ -23,6 +23,8 @@ public class ServletRouter {
         servletClasses.add(DeleteUserServlet.class);
         servletClasses.add(LoginServlet.class);
         servletClasses.add(LogoutServlet.class);
+        servletClasses.add(EditUserServlet.class);
+        servletClasses.add(ChangePasswordServlet.class);
 
     }
 
